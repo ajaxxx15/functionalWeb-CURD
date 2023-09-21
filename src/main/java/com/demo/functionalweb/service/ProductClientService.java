@@ -101,12 +101,11 @@ public class ProductClientService {
             String id = serverRequest.pathVariable("id");
             return webClient.delete().uri("product/delete/" + id)
                     .retrieve()
-                    .onStatus(HttpStatus::isError, response -> {
-                        logTraceResponse(log, response);
+                    .onStatus(HttpStatus::isError, response ->
+                    {
                         if (response.statusCode().equals(HttpStatus.NOT_FOUND)) {
                             return Mono.error(new ProductNotFoundException(id));
                         } else {
-                            System.out.println("m i here " + response.statusCode());
                             Mono<Response> responseMono = response.bodyToMono(Response.class);
                             return responseMono.map(errMessage -> {
                                 return new GenralException(errMessage.getErrorMessage());
